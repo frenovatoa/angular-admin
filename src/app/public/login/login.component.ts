@@ -1,10 +1,38 @@
-import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css', './../public.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+
+  form!: FormGroup; // It is better add the ! postfix operator to tell TypeScript that this variable will be initialized later.
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private http: HttpClient,
+    private router: Router
+  ) { }
+
+  ngOnInit() {
+    this.form = this.formBuilder.group({
+      email: '',
+      password: ''
+    });
+  }
+
+  submit() {
+    this.http.post(`${environment.api}/login`,
+      this.form.getRawValue(),
+      { withCredentials: true })
+      .subscribe(
+        () => this.router.navigate(['/'])
+      );
+  }
 
 }
